@@ -1,88 +1,40 @@
 const blogsRouter = require('express').Router()
-const Blog = require('../models/blog')
-const jwt = require('jsonwebtoken')
-const config = require('../utils/config')
-const User = require('../models/user')
+const Blog = require('../Models/blogModel');
 
-blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user')
-  response.json(blogs)
-})
-
-
-blogsRouter.post('/', async (request, response) => {
-    const body = request.body
-    const decodedToken = jwt.verify(request.token, config.SECRET)
-    if(!decodedToken.id) {
-      return response.status(400).json({ error: 'token invalid' })
-    }
-    const user = request.user
-
-    if(!body.title || !body.url) {
-      return response.status(400).json({ error: 'title and url are required' });
-    }
-
-    const newBlog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes || 0,
-      user: user._id
-    })
-
-    const savedBlog = await newBlog.save()
-    user.blog = user.blog.concat(savedBlog._id)
-    await user.save()
-    response.status(201).json(savedBlog)
-})
-
-
-blogsRouter.delete('/:id', async(request, response) => {
-  if(!request.token) {
-    return response.status(401).json({ error: "Token is missing" })
-  }
-  const decodedToken = jwt.verify(request.token, config.SECRET)
-  if(!decodedToken.id) {
-    return response.status(400).json({ error: 'token invalid' })
-  }
-  const user = request.user
-  const blog = await Blog.findById(request.params.id)
-  if(user._id.toString() === blog.user._id.toString()) {
+blogsRouter.get('/', async (req, res) => {
     try {
-      const result = await Blog.findByIdAndRemove(request.params.id)
-      if(result) {
-        response.status(204).end()
-      } else {
-        response.status(404).end();
-      }
-  } catch(error) {
-    console.error(error)
-    response.status(500).json({ error: "Internal Server Error"})
-  }
-  } else {
-    response.status(400).json({ error: "User is not authorized to delete this blog" })
-  }
-})
-
-
-blogsRouter.put('/:id', async (request, response) => {
-    const body = request.body
-    const blog = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes || 0
-    }
-    
-    try {
-      const result = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-      if(result) {
-        response.status(204).end()
-      } else {
-        response.status(404).end()
-      }
+        const blogs = await Blog.findAll();
+        res.json(blogs);
     } catch(error) {
-      console.error(error)
+        console.error(error);
+    };
+});
+
+
+blogsRouter.post('/', async (req, res) => {
+    try {
+        const blog = await Blog.create(req.body);
+        return res.json(blog);
+    } catch(error) {
+        return res.status(400).json({ error });
+    };
+});
+
+
+blogsRouter.delete('/:id', async(req, res) => {
+    try {
+        const blog = await Blog.findByPk(req.params.id);
+        if(!blog) {
+            return res.status(404).json({ error: "blog not found" })
+        }
+        await Blog.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(204).send();
+    } catch(error) {
+        res.status(500).json({ error })
     }
 })
 

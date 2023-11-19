@@ -20,7 +20,9 @@
     "lodash": "^4.17.21",
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.3",
-    "mongoose-unique-validator": "^4.0.0"
+    "mongoose-unique-validator": "^4.0.0",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
