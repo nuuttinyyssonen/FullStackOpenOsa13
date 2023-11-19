@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InI0aW1vIiwiaWQiOiI2NTFhNjUyMTIzZTJiZjczYmRlN2Q0YzUiLCJpYXQiOjE2OTYyNDUwMDd9.lxx_SS-QN2BQxWR_TijzhSmMNplKLfdAsokrK6UKYbw
+
+{
+    "title": "This is just third test title",
+    "author": "Third test person",
+    "url": "www.google.com",
+    "likes": 1300
+}
