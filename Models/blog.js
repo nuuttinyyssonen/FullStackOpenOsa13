@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const { db } = require('../util/db');
+const { sequelize } = require('../util/db');
 
 class Blog extends Model {}
 
@@ -28,13 +28,17 @@ Blog.init({
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'User', key: 'id' },
-      }
+        references: { model: 'users', key: 'id' },
+    },
+    year: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    }
     }, {
-        sequelize: db,
+        sequelize,
         underscored: true,
         timestamps: false,
-        modelName: 'blog'
+        modelName: 'blogs'
 })
 
 module.exports = Blog;

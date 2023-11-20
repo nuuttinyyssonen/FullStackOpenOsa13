@@ -56,6 +56,8 @@ blogsRouter.post('/', tokenExtractor, async (req, res, next) => {
         if(!user) {
             return res.status(404).json({ error: "user was not found" });
         };
+        console.log(req.body)
+        console.log(user.id)
         const blog = await Blog.create({ ...req.body, userId: user.id });
         res.json(blog);
     } catch(error) {
