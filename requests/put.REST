@@ -1,0 +1,6 @@
+PUT http://localhost:5000/api/users/test 
+content-type: application/json
+
+{
+    "username": "nuuttinyyssonen"
+}

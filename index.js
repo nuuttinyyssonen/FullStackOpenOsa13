@@ -1,35 +1,34 @@
 const express = require('express');
 const app = express();
 const cors = require('cors')
+
 require('dotenv').config();
-const { QueryTypes, } = require('sequelize');
-const Blog = require('./Models/blogModel');
-const sequelize = require('./sequalize');
+const { connectToDatbase } = require('./util/db');
+const { PORT } = require('./util/config');
+
 const blogsRouter = require('./controllers/blogs');
-app.use(cors())
-app.use(express.json())
+const userRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
+const authorRouter = require('./controllers/authors');
 
-Blog.sync()
+const { errorHandler, unknownEndpoint } = require('./util/middleware');
 
-const main = async () => {
-    try {
-      await sequelize.authenticate()
-      const blogs = await sequelize.query("SELECT * FROM blogs", { type: QueryTypes.SELECT })
-      console.log(blogs)
-    } catch (error) {
-      console.error('Unable to connect to the database:', error)
-    }
-  }
-  
-  main()
-
-app.get('/', async(req, res) => {
-    const blogs = await Blog.findAll();
-    res.json(blogs)
-})
+app.use(cors());
+app.use(express.json());
 
 app.use('/api/blogs', blogsRouter);
-const PORT = 5000
-app.listen(PORT, () => {
-    console.log(`Server is running on PORT ${PORT}`)
-})
+app.use('/api/users', userRouter);
+app.use('/api/login', loginRouter);
+app.use('/api/authors', authorRouter);
+
+app.use(errorHandler);
+app.use(unknownEndpoint);
+
+const start = async() => {
+  await connectToDatbase();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
+  })
+};
+
+start();

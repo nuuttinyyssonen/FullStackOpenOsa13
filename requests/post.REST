@@ -1,9 +1,7 @@
-POST http://localhost:5000/api/blogs 
+POST http://localhost:5000/api/users 
 content-type: application/json
 
 {
-    "title": "This is just third test title",
-    "author": "Third test person",
-    "url": "www.google.com",
-    "likes": 1300
+    "username": "test@gmail.com",
+    "name": "Nuutti Nyyssönen"
 }
