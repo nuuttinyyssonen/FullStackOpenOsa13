@@ -1,4 +1,4 @@
-const { User, Blog, ReadingList } = require('../Models/index');
+const { User, Blog, Session } = require('../Models/index');
 const userRouter = require('express').Router();
 const { Op } = require('sequelize');
 

@@ -1,24 +1,9 @@
 const blogsRouter = require('express').Router()
-const { Blog, User } = require('../Models/index');
+const { Blog, User, Session } = require('../Models/index');
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('../util/config');
 const { Op } = require('sequelize');
-
-const tokenExtractor = (req, res, next) => {
-    const authorization = req.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-      try {
-        console.log(authorization.substring(7))
-        req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-      } catch (error){
-        console.log(error)
-        return res.status(401).json({ error: 'token invalid' })
-      }
-    } else {
-      return res.status(401).json({ error: 'token missing' })
-    }
-    next()
-}
+const { tokenExtractor } = require('../util/middleware');
 
 blogsRouter.get('/', async (req, res) => {
     const where = {};
@@ -56,8 +41,17 @@ blogsRouter.post('/', tokenExtractor, async (req, res, next) => {
         if(!user) {
             return res.status(404).json({ error: "user was not found" });
         };
-        console.log(req.body)
-        console.log(user.id)
+        if(user.disabled) {
+            return res.status(400).json({ error: "user has been disbaled" })
+        }
+        const session = await Session.findOne({
+            where: {
+                userId: user.id
+            }
+        });
+        if(!session) {
+            return res.status(400).json({ error: "session was not found" })
+        }
         const blog = await Blog.create({ ...req.body, userId: user.id });
         res.json(blog);
     } catch(error) {

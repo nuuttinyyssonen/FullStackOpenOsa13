@@ -2,6 +2,6 @@ POST http://localhost:5000/api/users
 content-type: application/json
 
 {
-    "username": "testsecond@gmail.com",
+    "username": "nuutti.nyyssonen@gmail.com",
     "name": "Nuutti Nyyssönen"
 }
